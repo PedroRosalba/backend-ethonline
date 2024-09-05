@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ArtistRepository } from './repositories/artist.repository';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Repository } from 'typeorm';
 import { CreateArtistDto } from './dto/create-artist-dto';
-import { Artist } from './entities/artist.entity';
+import { Artist } from '../artist/entities/artist.entity';
+import { User } from '../user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class ArtistService {
   constructor(
-    @InjectRepository(ArtistRepository)
-    private artistRepository: ArtistRepository,
+    @Inject('ARTIST_REPOSITORY')
+    private artistRepository: Repository<Artist>,
+    @Inject('USER_REPOSITORY')
+    private userRepository: Repository<User>
   ) {}
 
   async createArtist(createArtistDto: CreateArtistDto): Promise<Artist> {
@@ -16,7 +19,10 @@ export class ArtistService {
     const artist = this.artistRepository.create({ name });
     return this.artistRepository.save(artist);
   }
-  async getLeaderboard(): Promise<any[]> {
-    return this.artistRepository.getLeaderboard();
+  async getLeaderboard(spotifyId: string): Promise<any[]> {
+    const artist = await this.artistRepository.find({
+      where: {spotifyId}
+    });
+    return 
   }
 }

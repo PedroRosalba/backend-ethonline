@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserArtistRepository } from './repositories/user-artist.repository';
 import { UserArtistService } from './user-artist.service';
-import { UserArtist } from './entities/user-artist.entity';
+import { DatabaseModule } from '../database/database.module';
+import { userartistProviders } from './user-artist.provider';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserArtist])],
-  providers: [UserArtistService, UserArtistRepository],
-  exports: [UserArtistService, UserArtistRepository], // Export the service to be used in other modules
+  imports: [DatabaseModule],
+  providers: [...userartistProviders,UserArtistService],
+  exports: [UserArtistService], // Export the service to be used in other modules
 })
 export class UserArtistModule {}

@@ -6,6 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "migration:generate": "npm run typeorm migration:generate ./src/migrations/MyMigrationName -d ./src/database/data-source.ts",
+    "migration:run": "node ./node_modules/typeorm/cli.js migration:run -d ./dist/src/database/datasource.js",
     "start:dev:db": "./src/scripts/start-db.sh",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "build": "nest build",
@@ -28,6 +30,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "dotenv": "^16.4.5",
     "pg": "^8.12.0",
+    "postgres": "^3.4.4",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },

@@ -1,23 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserArtist } from './entities/user-artist.entity';
-import { UserArtistRepository } from './repositories/user-artist.repository';
-import { User } from 'src/user/entities/user.entity';
-import { Artist } from 'src/artist/entities/artist.entity';
+import { UserArtist } from '../userartist/entities/user-artist.entity';
+import { User } from '../user/entities/user.entity';
+import { Artist } from '../artist/entities/artist.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserArtistService {
   constructor(
-    @InjectRepository(UserArtistRepository)
-    private userArtistRepository: UserArtistRepository,
+    @Inject('USERARTIST_REPOSITORY')
+    private userartistRepository: Repository<UserArtist>,
   ) {}
 
   async createUserArtist(user: User, artist: Artist, minutesListened: number): Promise<UserArtist> {
-    const userArtist = this.userArtistRepository.create({
+    const userArtist = this.userartistRepository.create({
       user,
       artist,
       minutesListened,
     });
-    return this.userArtistRepository.save(userArtist);
+    return this.userartistRepository.save(userArtist);
   }
 }

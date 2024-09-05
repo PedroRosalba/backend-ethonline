@@ -9,6 +9,9 @@ export class Artist {
 
   @Column()
   name: string;
+
+  @Column()
+  spotifyId: string; 
   
   @OneToMany(() => UserArtist, (userArtist) => userArtist.artist)
   users: UserArtist[];

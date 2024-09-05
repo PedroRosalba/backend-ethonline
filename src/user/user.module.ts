@@ -2,13 +2,15 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { UserRepository } from './repositories/user.repository';
 import { User } from './entities/user.entity';
-import { ArtistRepository } from '../artist/repositories/artist.repository';
+import { DatabaseModule } from 'src/database/database.module';
+import { userProviders } from './user.provider';
+import { artistProviders } from 'src/artist/artist.provider';
+import { userartistProviders } from 'src/userartist/user-artist.provider';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, UserRepository, ArtistRepository])],
-  providers: [UserService],
+  imports: [DatabaseModule],
+  providers: [...userProviders, ...artistProviders, ...userartistProviders, UserService],
   controllers: [UserController],
   exports: [UserService],
 })

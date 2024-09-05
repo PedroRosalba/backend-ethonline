@@ -1,21 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserRepository } from './repositories/user.repository';
-import { ArtistRepository } from '../artist/repositories/artist.repository';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user-dto';
-import { User } from './entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { Artist } from '../artist/entities/artist.entity';
-import { UserArtist } from 'src/userartist/entities/user-artist.entity';
-import { UserArtistRepository } from 'src/userartist/repositories/user-artist.repository';  
+import { UserArtist } from '../userartist/entities/user-artist.entity';
+import { ArtistService } from 'src/artist/artist.service';
+import { UserArtistService } from 'src/userartist/user-artist.service';
+
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
-    @InjectRepository(ArtistRepository)
-    private artistRepository: ArtistRepository,
-    @InjectRepository(UserArtistRepository)
-    private userArtistRepository: UserArtistRepository,
+    @Inject('USER_REPOSITORY')
+    private userRepository: Repository<User>,
+    @Inject('ARTIST_REPOSITORY')
+    private artistRepository: Repository<Artist>,
+    @Inject('USERARTIST_REPOSITORY')
+    private userartistRepository: Repository<UserArtist>,
   ) {}
 
   // async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -47,22 +48,37 @@ export class UserService {
       name,
       lastTimeCalled,
       timeLastSongPlayed,
+      artistsMinutesListened
     });
 
     await this.userRepository.save(user);
 
-    // Create and save UserArtist relationships
-    for (const { artistId, minutesListened } of artistsMinutesListened) {
-      const artist = await this.artistRepository.findOne({ where: { id: artistId } });
-      if (artist) {
-        const userArtist = this.userArtistRepository.create({
-          user,
-          artist,
-          minutesListened,
-        });
-        await this.userArtistRepository.save(userArtist);
-      }
-    }
+    // Create and save UserArtist relationship
+    // for (const { artistId, minutesListened } of 
+    artistsMinutesListened.map(async ({ artistId, minutesListened }) => {
+        const artist = await this.artistRepository.findOne({ where: { id: artistId } });
+        if (artist) {
+          const userArtist = this.userartistRepository.create({
+            user,
+            artist,
+            minutesListened,
+          
+          });
+          await this.userartistRepository.save(userArtist);
+        }
+      }   
+    ) 
+    //   const artist = await this.artistRepository.findOne({ where: { id: artistId } });
+    //   if (artist) {
+    //     const userArtist = this.userArtistRepository.create({
+    //       user,
+    //       artist,
+    //       minutesListened,
+        
+    //     });
+    //     await this.userArtistRepository.save(userArtist);
+    //   }
+    // }
 
     return user;
   }

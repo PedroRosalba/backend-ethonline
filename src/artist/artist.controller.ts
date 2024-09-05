@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist-dto';
 import { Artist } from './entities/artist.entity';
@@ -12,7 +12,7 @@ export class ArtistController {
     return this.artistService.createArtist(createArtistDto);
   }
   @Get('leaderboard')
-  async getLeaderboard() {
-    return this.artistService.getLeaderboard();
+  async getLeaderboard(@Query() dto: {spotifyId: string}) {
+    return this.artistService.getLeaderboard(dto.spotifyId);
   }
 }
